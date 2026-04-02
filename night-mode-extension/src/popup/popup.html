@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="popup.css">
+    <title>Ночной режим</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">🌙</div>
+            <h2>Ночной режим</h2>
+        </div>
+        
+        <div class="toggle-container">
+            <label class="switch">
+                <input type="checkbox" id="nightModeToggle">
+                <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">Включить ночной режим</span>
+        </div>
+        
+        <div class="info">
+            <p>💡 Ночной режим уменьшает нагрузку на глаза</p>
+            <p>🎨 Цвета можно настроить ниже</p>
+        </div>
+        
+        <div class="settings">
+            <h3>Настройки</h3>
+            
+            <div class="setting-item">
+                <label for="brightness">Яркость</label>
+                <input type="range" id="brightness" min="0.5" max="1" step="0.01" value="0.85">
+                <span id="brightnessValue">85%</span>
+            </div>
+            
+            <div class="setting-item">
+                <label for="contrast">Контрастность</label>
+                <input type="range" id="contrast" min="0.8" max="1.2" step="0.01" value="1">
+                <span id="contrastValue">100%</span>
+            </div>
+            
+            <div class="setting-item">
+                <label for="sepia">Сепия</label>
+                <input type="range" id="sepia" min="0" max="1" step="0.01" value="0.2">
+                <span id="sepiaValue">20%</span>
+            </div>
+        </div>
+        
+        <div class="status" id="status" style="display: none;">
+            <span class="status-text">Применяем настройки...</span>
+        </div>
+        
+        <div class="footer">
+            <button id="resetBtn" class="reset-btn">Сбросить настройки</button>
+        </div>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
