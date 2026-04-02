@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
+    <style>
+        body {
+            background: rgb(139, 119, 119);
+            color: #a4aada;
+            font-family: Arial;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .box {
+            background: #c0bdbd;
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            background: black;
+            border: 1px solid #4280d1;
+            color: #57a5ee;
+        }
+        button {
+            width: 100%;
+            padding: 8px;
+            background: #316fbe;
+            color: rgb(73, 73, 73);
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 10px;
+        }
+        a {
+            color: #659dac;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .msg {
+            margin-top: 10px;
+            padding: 8px;
+            display: none;
+        }
+        .error { background: #8b0000; color: white; }
+        .success { background: #0f7946; color: white; }
+    </style>
+</head>
+<body>
+<div class="box">
+    <div id="login">
+        <h3>Вход</h3>
+        <input type="text" id="username" placeholder="Имя">
+        <input type="password" id="password" placeholder="Пароль">
+        <button onclick="login()">Войти</button>
+        <p>Нет аккаунта? <a onclick="showReg()">Регистрация</a></p>
+    </div>
+    <div id="reg" style="display:none">
+        <h3>Регистрация</h3>
+        <input type="text" id="regUser" placeholder="Имя">
+        <input type="password" id="regPass" placeholder="Пароль">
+        <input type="password" id="regPass2" placeholder="Повторите">
+        <button onclick="register()">Зарегистрироваться</button>
+        <p>Уже есть аккаунт? <a onclick="showLogin()">Вход</a></p>
+    </div>
+    <div id="msg" class="msg"></div>
+</div>
+
+<script>
+    function showReg() {
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('reg').style.display = 'block';
+        document.getElementById('msg').style.display = 'none';
+    }
+    function showLogin() {
+        document.getElementById('reg').style.display = 'none';
+        document.getElementById('login').style.display = 'block';
+        document.getElementById('msg').style.display = 'none';
+    }
+    function showMessage(text, type) {
+        let msg = document.getElementById('msg');
+        msg.textContent = text;
+        msg.className = 'msg ' + type;
+        msg.style.display = 'block';
+        setTimeout(() => msg.style.display = 'none', 2000);
+    }
+    async function login() {
+        let username = document.getElementById('username').value;
+        let password = document.getElementById('password').value;
+        let res = await fetch('/api/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username, password})
+        });
+        let data = await res.json();
+        if (data.success) {
+            localStorage.setItem('userId', data.user.id);
+            localStorage.setItem('username', data.user.username);
+            window.location.href = '/';
+        } else {
+            showMessage(data.error, 'error');
+        }
+    }
+    async function register() {
+        let username = document.getElementById('regUser').value;
+        let password = document.getElementById('regPass').value;
+        let confirm = document.getElementById('regPass2').value;
+        if (password !== confirm) {
+            showMessage('Пароли не совпадают', 'error');
+            return;
+        }
+        let res = await fetch('/api/register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username, password})
+        });
+        let data = await res.json();
+        if (data.success) {
+            showMessage('Регистрация успешна!', 'success');
+            setTimeout(() => showLogin(), 1500);
+        } else {
+            showMessage(data.error, 'error');
+        }
+    }
+</script>
+</body>
+</html>
