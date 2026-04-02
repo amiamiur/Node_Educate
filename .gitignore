@@ -136,3 +136,5 @@ dist
 .pnp.*
 Quote-Collection/package.json
 Quote-Collection/webpack.config.js
+Quote-Collection/package.json
+Quote-Collection/webpack.config.js
