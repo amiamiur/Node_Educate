@@ -3,27 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <title>Менеджер заметок</title>
     <style>
         * {
+            margin: 10px;
             background-color: #000000;
-            color: #a7c465;
+            color: #dac227;
         }
         #stats {
-            color: rgb(16, 115, 177);
+            color: rgb(40, 142, 206);
+        }
+        .stats {
+            background-color: #000000;
+        }
+        body{
+            background-color: #000000;
         }
     </style>
 </head>
 <body>
-    <div id="stats"> </div>
+    <div id="stats" class="alert alert-dark" role="alert" style="background-color: #000000;"> </div>
     <div>
-        <button onclick='showNotes()'> Показать заметки</button>
-        <button onclick='addNote()'> Добавить заметку</button>
-        <button onclick='deleteNote()'> Удалить заметку</button>
-        <button onclick='editNote()'>Изменить заметку</button>
+        <button onclick='showNotes()' type="button" class="btn btn-info"> Показать заметки</button>
+        <button onclick='addNote()' type="button" class="btn btn-success"> Добавить заметку</button>
+        <button onclick='editNote()' type="button" class="btn btn-warning"> Редактировать заметку</button>
+        <button onclick='deleteNote()' type="button" class="btn btn-danger"> Удалить заметку</button>
     </div>
-    <div id="content"> </div>
+    <div id="content" class="alert alert-dark" role="alert" style="background-color: #000000;"> </div>
 
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>
