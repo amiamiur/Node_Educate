@@ -1,25 +1,32 @@
 import * as fs from 'fs';
 import path from "path";
 import { fileURLToPath } from "url";
+import { reindexId } from './helper.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const FILE_NAME = path.join(__dirname, "notes.json");
 
-
-export const saveFile = (notes) => {
-  const jsonData = JSON.stringify(notes);
-  fs.writeFileSync(FILE_NAME, jsonData);
-};
-
 export const loadFile = () => {
   try {
+    if (!fs.existsSync(FILE_NAME)) {
+      fs.writeFileSync(FILE_NAME, JSON.stringify([]));
+      return [];
+    }
     const jsonData = fs.readFileSync(FILE_NAME, "utf-8");
     return JSON.parse(jsonData);
   } catch (error) {
-    console.log(`${error.message}`);
-    console.log("Возникла ошибка", error.message);
+    console.log("Ошибка загрузки заметок:", error.message);
     return [];
+  }
+};
+
+export const saveFile = (notes) => {
+  try {
+    const jsonData = JSON.stringify(notes, null, 2);
+    fs.writeFileSync(FILE_NAME, jsonData);
+  } catch (error) {
+    console.log("Ошибка сохранения заметок:", error.message);
   }
 };
 
@@ -48,7 +55,6 @@ export const createNote = (userId, title, content) => {
   return { success: true, note: newNote };
 };
 
-// Обновление заметки (только свои)
 export const updateNote = (userId, noteId, title, content) => {
   const allNotes = loadFile();
   const noteIndex = allNotes.findIndex(note => 
@@ -67,5 +73,30 @@ export const updateNote = (userId, noteId, title, content) => {
   };
   
   saveFile(allNotes);
+  return { success: true };
+};
+
+export const deleteNote = (userId, noteId) => {
+  const allNotes = loadFile();
+  const filteredNotes = allNotes.filter(note => 
+    !(note.id === parseInt(noteId) && note.owner_id === parseInt(userId))
+  );
+  
+  if (filteredNotes.length === allNotes.length) {
+    return { success: false, error: "Заметка не найдена или доступ запрещен" };
+  }
+  
+  // Переиндексация ID для заметок этого пользователя
+  const userNotes = filteredNotes.filter(note => note.owner_id === parseInt(userId));
+  let userCounter = 1;
+  
+  const reindexedNotes = filteredNotes.map(note => {
+    if (note.owner_id === parseInt(userId)) {
+      return { ...note, id: userCounter++ };
+    }
+    return note;
+  });
+  
+  saveFile(reindexedNotes);
   return { success: true };
 };

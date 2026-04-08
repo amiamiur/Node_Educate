@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <title>Менеджер заметок</title>
     <style>
         * {
@@ -14,25 +14,45 @@
         #stats {
             color: rgb(40, 142, 206);
         }
-        .stats {
+        body {
             background-color: #000000;
         }
-        body{
-            background-color: #000000;
+        .user-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #111;
+            padding: 10px 20px;
+            border-radius: 8px;
+            z-index: 1000;
+        }
+        .notes-list {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .note-card {
+            transition: transform 0.2s;
+        }
+        .note-card:hover {
+            transform: translateX(5px);
         }
     </style>
 </head>
 <body>
-    <div id="stats" class="alert alert-dark" role="alert" style="background-color: #000000;"> </div>
+    <div id="userInfo" class="user-info"></div>
+    
+    <div id="stats" class="alert alert-dark" role="alert" style="background-color: #000000;"></div>
+    
     <div>
-        <button onclick='showNotes()' type="button" class="btn btn-info"> Показать заметки</button>
-        <button onclick='addNote()' type="button" class="btn btn-success"> Добавить заметку</button>
-        <button onclick='editNote()' type="button" class="btn btn-warning"> Редактировать заметку</button>
-        <button onclick='deleteNote()' type="button" class="btn btn-danger"> Удалить заметку</button>
+        <button onclick='showNotes()' type="button" class="btn btn-info">📋 Показать заметки</button>
+        <button onclick='addNote()' type="button" class="btn btn-success">➕ Добавить заметку</button>
+        <button onclick='editNote()' type="button" class="btn btn-warning">✏️ Редактировать заметку</button>
+        <button onclick='deleteNote()' type="button" class="btn btn-danger">🗑️ Удалить заметку</button>
     </div>
-    <div id="content" class="alert alert-dark" role="alert" style="background-color: #000000;"> </div>
+    
+    <div id="content" class="alert alert-dark" role="alert" style="background-color: #000000;"></div>
 
     <script type="module" src="app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

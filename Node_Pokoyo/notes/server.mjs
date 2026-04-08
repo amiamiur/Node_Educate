@@ -3,8 +3,8 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { reindexId, statsNotes } from './utils/helper.mjs'
 import * as fileManager from './utils/fileManager.mjs';
+import * as userManager from './utils/userManager.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
