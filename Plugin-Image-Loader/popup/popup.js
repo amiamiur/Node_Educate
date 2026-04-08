@@ -26,5 +26,5 @@ function onResult(frames){
 }
 
 function toPageImages(){
-    chrome.create({"url" : "pages/page.html"});
+    chrome.tabs.create({url: "pages/page.html"});
 }
