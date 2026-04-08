@@ -1,0 +1,13 @@
+body{
+    text-align: center;
+    background: linear-gradient(#1f1c, #0d0c0c);
+    width: 250px;
+}
+
+button{
+    width: 90%;
+    background: linear-gradient(#301873, #14b89a);
+    color: #f5bc00;
+    margin: 15px;
+    border-radius: 10px;
+}
