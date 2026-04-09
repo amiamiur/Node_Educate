@@ -19,12 +19,20 @@ function selectImages(){
 }
 
 function onResult(frames){
-  const imagesUrl = frames.map(frame => frame.result)
+  const imagesUrls = frames.map(frame => frame.result)
   .reduce((r1,r2) => r1.concat(r2));
 
-  window.navigator.clipboard.writeText(imagesUrl).then(window.close());
+  window.navigator.clipboard.writeText(imagesUrls.join("\n")).then(window.close());
+  toPageImages(imagesUrls);
 }
 
-function toPageImages(){
-    chrome.tabs.create({url: "pages/page.html"});
+function toPageImages(urls){
+    chrome.tabs.create({url: "pages/page.html", active: false},
+      (tab) =>{
+      setTimeout(() => {
+      chrome.tabs.sendMessage(tab.id, urls, (response) => {
+        chrome.tabs.update(tab.id, { active: true });
+      });
+    }, 500);
+  });
 }
