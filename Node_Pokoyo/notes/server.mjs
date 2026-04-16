@@ -2,19 +2,24 @@ import * as http from 'http';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
 import * as fileManager from './utils/fileManager.mjs';
 import * as userManager from './utils/userManager.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let notes = fileManager.loadFile();
-
 const server = http.createServer(async (req, res) => {
   const { url, method } = req;
 
-  // ROOT ROUTERS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, userid');
+
+  if (method === 'OPTIONS') {
+    res.writeHead(200);
+    res.end();
+    return;
+  }
 
   if (url === "/" && method === "GET") {
     const html = await fs.readFile(path.join(__dirname, "index.html"), "utf-8");
@@ -30,72 +35,107 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // API ROUTERS
+  if (url === "/login.html" && method === "GET") {
+    const html = await fs.readFile(path.join(__dirname, "login.html"), "utf-8");
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(html);
+    return;
+  }
+
+  if (url === "/api/register" && method === "POST") {
+    let body = "";
+    req.on("data", (chunk) => (body += chunk));
+    req.on("end", async () => {
+      const { username, password } = JSON.parse(body);
+      const result = userManager.registerUser(username, password);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(result));
+    });
+    return;
+  }
+
+  if (url === "/api/login" && method === "POST") {
+    let body = "";
+    req.on("data", (chunk) => (body += chunk));
+    req.on("end", async () => {
+      const { username, password } = JSON.parse(body);
+      const result = userManager.loginUser(username, password);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(result));
+    });
+    return;
+  }
 
   if (url === "/api/notes" && method === "GET") {
+    const userId = req.headers.userid;
+    if (!userId) {
+      res.writeHead(401, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Не авторизован" }));
+      return;
+    }
+    
+    const notes = fileManager.getUserNotes(userId);
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(notes));
     return;
   }
-
   if (url === "/api/notes" && method === "POST") {
+    const userId = req.headers.userid;
+    if (!userId) {
+      res.writeHead(401, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Не авторизован" }));
+      return;
+    }
+    
     let body = "";
     req.on("data", (chunk) => (body += chunk));
     req.on("end", async () => {
-      console.log("create start");
       const { title, content } = JSON.parse(body);
-      const newNote = {
-        id: notes.length + 1,
-        title: title,
-        content: content,
-        date: new Date().toLocaleString(),
-      };
-      console.log("create end");
-      notes.push(newNote);
-      fileManager.saveFile(notes);
-      console.log(`Заметка ${newNote.title} сохранена!`);
-
+      const result = fileManager.createNote(userId, title, content);
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ success: true }));
+      res.end(JSON.stringify(result));
     });
     return;
   }
-  if (url.startsWith("/api/notes/") && method === "DELETE") {
-    const id = parseInt(url.split("/")[3]);
-    notes.splice(id - 1, 1);
-    notes = reindexId(notes);
-    fileManager.saveFile(notes);
 
+  if (url.startsWith("/api/notes/") && method === "DELETE") {
+    const userId = req.headers.userid;
+    if (!userId) {
+      res.writeHead(401, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Не авторизован" }));
+      return;
+    }
+    
+    const noteId = parseInt(url.split("/")[3]);
+    const result = fileManager.deleteNote(userId, noteId);
     res.writeHead(200, { "Content-Type": "application/json" });
-    return res.end(JSON.stringify({ success: true }));
+    res.end(JSON.stringify(result));
+    return;
   }
 
   if (url.startsWith("/api/notes/") && method === "PUT") {
+    const userId = req.headers.userid;
+    if (!userId) {
+      res.writeHead(401, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: "Не авторизован" }));
+      return;
+    }
+    
+    const noteId = parseInt(url.split("/")[3]);
     let body = "";
-    const id = parseInt(url.split("/")[3]);
     req.on("data", (chunk) => (body += chunk));
     req.on("end", async () => {
-      console.log("edit start");
-
       const { title, content } = JSON.parse(body);
-
-      notes[id - 1] = {
-        ...notes[id - 1],
-        title: title,
-        content: content,
-        date: new Date().toLocaleString(),
-      };
-      fileManager.saveFile(notes);
-      console.log("edit end");
-      console.log(`Заметка ${title} изменена!`);
-
+      const result = fileManager.updateNote(userId, noteId, title, content);
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ success: true }));
+      res.end(JSON.stringify(result));
     });
+    return;
   }
-  return;
+  res.writeHead(404, { "Content-Type": "text/plain" });
+  res.end("404 - Страница не найдена");
 });
 
 server.listen(3000, () => {
-  console.log("Сервер запущен на порту http://localhost:3000");
+  console.log("Сервер запущен на http://localhost:3000");
 });
