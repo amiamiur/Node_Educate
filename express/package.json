@@ -11,7 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "express": "^5.2.1",
-    "node-modules": "^1.0.1"
+    "node-modules": "^1.0.1",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^6.0.1"
   }
 }
